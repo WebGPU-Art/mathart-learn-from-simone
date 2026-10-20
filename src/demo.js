@@ -95,6 +95,16 @@ export async function mountDensity(root, o) {
     bar.append(b); syncPlay()
   }
   const home = { ...v.view }
+  const init = { params: Float32Array.from(v.params), look: { ...v.look }, view: { ...v.view } }
+  // 全部重置：参数 / 视图 / 外观回到初始状态，并重新开始累积
+  const rb = document.createElement('button'); rb.type = 'button'; rb.textContent = '↺ 重置'; rb.title = '参数、视图、外观全部回到初始状态（画面黑了或看不清时点这里）'
+  rb.onclick = () => {
+    v.params.set(init.params); Object.assign(v.view, api.home || init.view); Object.assign(v.look, init.look)
+    if (o.presets?.length && api.selectPreset) { try { const sel = ui.querySelector('.presets select'); if (sel) sel.value = 0 } catch (e) {} }
+    setBadge(o.src || o.presets?.[0]?.src)
+    syncFromV(); refreshP(); refreshL(); v.reset(); if (o.anim && playing) t0 = performance.now(); kick()
+  }
+  bar.append(rb)
   const hb = document.createElement('button'); hb.type = 'button'; hb.textContent = '⟲ 视图'
   hb.onclick = () => { Object.assign(v.view, api.home || home); v.reset(); kick() }
   bar.append(hb)
@@ -134,6 +144,30 @@ export async function mountDensity(root, o) {
     if (more) kick()
   }
   onVisible(root, (vis) => { visible = vis; if (vis) kick() })
+  // 自愈：页面从后台切回、窗口尺寸变化、或开始 1.5 秒内，重新清空并绘制，避免交换链卡在空白
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { v.reset(); kick() } })
+  window.addEventListener('focus', () => { dirty = true; kick() })
+  setTimeout(() => { v.reset(); kick() }, 1200)
+  // 黑屏检测：画面一直是纯色时，显示醒目的「重置」提示
+  const warn = document.createElement('button'); warn.type = 'button'; warn.className = 'blankwarn'; warn.hidden = true
+  warn.textContent = '画面没有出来？点这里重置'
+  warn.onclick = () => { warn.hidden = true; rb.onclick() }
+  ;(root.querySelector('.stack.main') || root).append(warn)
+  const isBlank = () => {
+    try {
+      const t = document.createElement('canvas'); t.width = t.height = 48
+      const x = t.getContext('2d'); x.drawImage(canvas, 0, 0, 48, 48)
+      const d = x.getImageData(0, 0, 48, 48).data
+      let mx = 0, mn = 765
+      for (let i = 0; i < d.length; i += 4) { const q = d[i] + d[i + 1] + d[i + 2]; if (q > mx) mx = q; if (q < mn) mn = q }
+      return mx - mn < 12
+    } catch (e) { return false }
+  }
+  let blankN = 0
+  setInterval(() => {
+    if (!visible || document.hidden) return
+    requestAnimationFrame(() => { v.step(false); const b = isBlank(); blankN = b ? blankN + 1 : 0; warn.hidden = blankN < 2 })
+  }, 2500)
   if (o.autoplay && !TEST) { playing = true; syncPlay() }
   return api
 }
@@ -171,6 +205,11 @@ export async function mountLyap(root, o) {
   canvas.addEventListener('pointerup', () => { down = false })
   canvas.addEventListener('contextmenu', (e) => e.preventDefault())
   attachPanZoom(canvas, m.view, () => kick(), { filter: (e) => e.shiftKey || e.button === 2 })
+  const home0 = { ...m.view }
+  const mb = document.createElement('button'); mb.type = 'button'; mb.textContent = '⟲ 地图视图'; mb.title = '回到初始范围'
+  mb.onclick = () => { Object.assign(m.view, home0); kick() }
+  getToolbar(root).append(mb)
+  setTimeout(kick, 1200); document.addEventListener('visibilitychange', () => { if (!document.hidden) kick() })
   window.addEventListener('resize', () => kick())
   onVisible(root, (vis) => { visible = vis; if (vis) kick() })
   return api
