@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>番外 · 对称吸引子的变奏</title>
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<main>
+  <h1>番外 · 对称吸引子的变奏</h1>
+  <p class="sub">沿着 Simone Conradi 最近的一组作品，看同一类图案还能怎么变。所有画面都由 WebGPU 在你的显卡上实时迭代、计数、上色。</p>
+  <div class="legend">来源角标：<span class="badge c">Conradi 参数</span>参数读自他公开图片上的标注 <span class="badge f">公式来自 Conradi</span>参数本项目自己找 <span class="badge n">本项目探索</span>他的帖子里没有的玩法 <span class="badge k">经典</span>文献中的常见参数</div>
+  <div class="note">操作：拖动平移、滚轮缩放；改任何参数都会清空重画。画面离开视口后自动暂停。需要支持 WebGPU 的浏览器。</div>
+  <ol class="toc">
+    <li><a href="#ext">扩展公式：两项新成员</a></li>
+    <li><a href="#stepdemo">一步迭代的完整过程</a></li>
+    <li><a href="#ripple">花边项：n·p 个起伏</a></li>
+    <li><a href="#a5">a5 / z̄：中间的洞与窄窗口</a></li>
+    <li><a href="#edge">悬崖边的参数：a0 扫描与参数地图</a></li>
+    <li><a href="#chiral">ω：打破镜像</a></li>
+    <li><a href="#orders">三重到十二重</a></li>
+    <li><a href="#colour">新的上色：方向、浮雕、纸面、饰带</a></li>
+    <li><a href="#sincos">sin·cos(z²) 与参数地图</a></li>
+    <li><a href="#torus">绕着环面转的多项式</a></li>
+    <li><a href="#flame">两个复数映射：火焰与线团</a></li>
+  </ol>
+
+  <h2 id="ext">1 · 扩展公式：两项新成员</h2>
+  <p>把平面上的点写成复数 z。Conradi 这组作品用的规则是：</p>
+  <div class="formula">z′ = { a0 + a1·|z|² + a2·Re(zⁿ) + <b style="color:#ffb347">a3·|z|·Re[(z/|z|)<sup>np</sup>]</b> + i·ω } · z + a4·z̄<sup>n−1</sup> + <b style="color:#ff6fae">a5 / z̄</b></div>
+  <p>前面几项是经典的 Field–Golubitsky 对称吸引子（第二集讲过“先转再算 = 先算再转”为什么带来对称）。橙色和粉色是新增的两项；ω 是本项目额外加入的旋转项，Conradi 的公式里系数都是实数（ω = 0）。选一个预设，或者直接拖动下面的滑块。</p>
+  <div class="demo" id="d-ext">
+    <div class="presets"></div>
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+
+  <h2 id="stepdemo">2 · 一步迭代的完整过程</h2>
+  <p>从 z₀ = 0.3 + 0.2i 出发（参数用 C2）。每按一次“下一步”，走完四个小步骤：算长度和角度 → 算括号里的系数 s → 乘以 z（转一个角度、缩放）→ 加上共轭项，得到新的 z，把它所在的格子 +1。</p>
+  <div class="demo" id="d-step">
+    <div class="two">
+      <div><div class="stack main"><canvas class="plain sq"></canvas></div></div>
+      <div>
+        <p class="st-nav"><button class="one">下一步</button> <button class="ten">走 10 步</button> <button class="many">走 2000 步</button> <button class="rst">重来</button></p>
+        <pre class="orbit"></pre>
+      </div>
+    </div>
+  </div>
+
+  <h2 id="ripple">3 · 花边项：沿着圆周起伏 n·p 次</h2>
+  <p>(z/|z|) 是 z 的方向，它的 np 次方的实部就是 cos(np·θ)：沿圆周走一圈，上下起伏 n·p 次。p = 0 时它是常数；p 越大，起伏越密。因为 n·p 总是 n 的倍数，这圈“花边”转 360°/n 后与自己重合，不会破坏 n 重对称。左上角画的是这圈花边本身；用 C3 的系数，数一数 p = 23 时外圈的锯齿：5 × 23 = 115 个。</p>
+  <div class="demo" id="d-ripple">
+    <div class="stack main"><canvas class="gl sq"></canvas><canvas class="ov"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+  </div>
+
+  <h2 id="a5">4 · a5 / z̄：中间的洞，以及一个很窄的窗口</h2>
+  <p>z 离原点越近，a5/z̄ 越大，会把点推开，于是中间留出一个干净的洞。在 C1 这组参数里，a5 = 0 时所有点都被吸进原点；a5 调到约 −0.105，这朵十瓣花突然出现；继续往下，洞越来越大，到 −0.16 附近又消失。Conradi 用的 −0.1062 正好在花刚出现的那条边上。</p>
+  <div class="demo" id="d-a5">
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+  </div>
+
+  <h2 id="edge">5 · 最美的参数，在悬崖边上</h2>
+  <p>C3 的 a0 = 2.7369。把 a0 从 2.30 慢慢调大：先是几个跳来跳去的点，然后铺开成一片，中途还会缩回去（周期窗口）；越往后越满，但只要超过约 2.74，点就飞向无穷远。左边是 (a0, a1) 参数平面的李雅普诺夫地图：<b style="color:#ffb347">橙红</b> = 混沌（会画出一大片），<b style="color:#8fd3ff">蓝</b> = 规则（只有几个点），<b>黑</b> = 发散。在地图上点击或拖动来选参数，右边立刻画出对应的图案。</p>
+  <div class="demo" id="d-edge">
+    <div class="pair">
+      <div><div class="stack"><canvas class="map"></canvas><canvas class="mapov"></canvas></div><p class="hint">左键点 / 拖 = 选参数；Shift + 拖 = 平移；滚轮 = 缩放</p></div>
+      <div><div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div><div class="readout"></div></div>
+    </div>
+    <div class="ctl"></div>
+  </div>
+
+  <h2 id="chiral">6 · ω：打破镜像</h2>
+  <p>系数全是实数时，把图上下翻过来，规则不变，所以图里除了旋转对称，还有 n 条镜面对称轴（虚线）。给括号加上 i·ω（乘 i 就是转 90°），每一步都带一点旋转：镜面线消失，五角星拧成风车。旋转对称还在——对称群从二面体群 D₅ 变成了循环群 Z₅。</p>
+  <div class="demo" id="d-chiral">
+    <div class="stack main"><canvas class="gl sq"></canvas><canvas class="ov"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+  </div>
+
+  <h2 id="orders">7 · 三重到十二重</h2>
+  <p>把 n 换成 3、4、6、7、8、12，随机生成几千组系数，只保留“不发散、指数大于零、铺得开”的那些。下面是本项目筛出来的几组；颜色按“跳跃方向”上色（见下一节）。也可以拖动 n、p 自己试。</p>
+  <div class="demo" id="d-orders">
+    <div class="presets"></div>
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+
+  <h2 id="colour">8 · 新的上色：方向、浮雕、纸面、饰带</h2>
+  <p>默认的颜色只代表“格子里点有多密”。这里多记一样东西：每一步从旧点指向新点的<b>方向</b>，对应到色轮上（向右红、向上绿、向左青、向下紫），格子里的方向取平均作为色相，亮度仍由密度决定。另外三种：把密度当成高度、从左上方打光（浮雕）；浅色纸面 + 深色墨水；以及把角度当横轴、半径当纵轴，把圆形展开成一条饰带——旋转对称变成了平移对称。</p>
+  <div class="demo" id="d-colour">
+    <p class="st-nav"><button data-k="dir">方向色相</button> <button data-k="relief">浮雕打光</button> <button data-k="ink">浅色纸面</button> <button data-k="unwrap">展开成饰带</button> <button data-k="plain">还原</button></p>
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+  </div>
+
+  <h2 id="sincos">9 · 另一个公式：sin·cos(z²)，以及整张参数地图</h2>
+  <p>Conradi 的一段动画用的是 x′ = sin(x² − y² + a)，y′ = cos(2xy + b)。x² − y² 和 2xy 正是 z² 的实部和虚部。正弦余弦永远在 [−1, 1]，点不会发散；但随手取的 (a, b) 大多只画出几个点。怎么找有图的参数？把整个 (a, b) 平面画成李雅普诺夫地图：每个像素一组参数，两条挨得极近的轨道各走几百步，平均每步把距离放大多少倍再取对数。</p>
+  <div class="demo" id="d-sincos">
+    <div class="pair">
+      <div><div class="stack"><canvas class="map"></canvas><canvas class="mapov"></canvas></div><p class="hint">左键点 / 拖 = 选 (a, b)；Shift + 拖 = 平移；滚轮 = 缩放。地图沿两个方向都以 2π 为周期。</p></div>
+      <div><div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div><div class="readout"></div></div>
+    </div>
+    <div class="ctl"></div>
+  </div>
+
+  <h2 id="torus">10 · 绕着环面转的多项式</h2>
+  <p>Conradi 的一个 16 次多项式：128x¹⁶ − 192x¹² + 74x⁸ − 5.5x⁴ + (t₁⁴(12.9+56.6i) + t₁³(−14.2−123i) + t₁²(−128−140i) + t₁(424−150i) + 454+433i)·x + t₂(420+609i) − 393 − 483i，其中 |t₁| = |t₂| = 1。画法：随机取两个角度得到 t₁、t₂ → 算出 17 个系数 → GPU 上用 Aberth 法一次求出 16 个根 → 落进格子；重复几十万次。默认按 t₁ 的角度上色：薄纱其实是一缕缕彩色的丝编成的。转动“常数项相位”φ（本项目加的旋钮），所有的根一起流动。</p>
+  <div class="demo" id="d-torus">
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+
+  <h2 id="flame">11 · 两个复数映射：火焰与线团</h2>
+  <p>Conradi 说：“整个东西只是两个从复数到复数的映射，几个数字，加上大量迭代。”每一步抛一枚硬币，挑一个映射作用在当前点上（混沌游戏），映射里有 z²、z̄，甚至 1/z。弯曲的映射常常把点甩飞：一种办法是飞出去就从随机点重新出发（火焰丝）；本项目的另一种办法是每一步最后加一个“折回”函数，让点永远跑不远——正弦折叠、反演、z/(1+|z|)。颜色：最近几步用第一个映射多就偏青，用第二个多就偏橙。</p>
+  <div class="demo" id="d-flame">
+    <div class="presets"></div>
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+
+  <p class="sub" style="margin-top:3em">所有画面均为本项目按同样的数学重新计算渲染，并非 Simone Conradi 的原作；粉色角标的参数读自他公开发布的图片。配套视频：《数学图案是怎么画出来的》上、下集与番外。</p>
+</main>
+<script type="module" src="/src/variations.js"></script>
+</body>
+</html>

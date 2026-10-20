@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>① 方程的根会跳舞</title>
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<main>
+  <h1>① 方程的根会跳舞</h1>
+  <p class="sub">对应视频上集：复数、求根、根的轨迹、根云、复平面着色、特征值。每个画面都可以拖、可以调。</p>
+  <ol class="toc">
+    <li><a href="#mul">复数乘法 = 旋转 + 缩放</a></li>
+    <li><a href="#traj">根的轨迹：系数绕一圈，根会换位</a></li>
+    <li><a href="#cloud">根云：几十万个多项式的根</a></li>
+    <li><a href="#domain">给复平面上色，以及“绕几圈”</a></li>
+    <li><a href="#eig">特征值：2×2 矩阵</a></li>
+    <li><a href="#boh">波希米亚矩阵：所有小整数矩阵的特征值</a></li>
+  </ol>
+
+  <h2 id="mul">1 · 复数乘法 = 长度相乘、角度相加</h2>
+  <p>拖动两个白点 a、b。粉色的 a·b：长度是两者长度之积，角度是两者角度之和。把 b 拖到单位圆上（长度 1），乘法就成了纯旋转；拖到 i 的位置，就是逆时针转 90°。</p>
+  <div class="demo" id="d-mul">
+    <div class="stack main"><canvas class="plain wide"></canvas></div>
+    <div class="readout"></div>
+  </div>
+
+  <h2 id="traj">2 · 根的轨迹：系数绕一圈，根会换位</h2>
+  <p>多项式 z⁵ + t·z + 1，让 t = R·e<sup>iθ</sup> 绕圆周走一圈，五个根跟着移动，留下彩色轨迹。R 小的时候，每个根回到自己原来的位置；R 大到一定程度，走完一圈后根会互相交换位置——就像编辫子。这是根云、根的动画背后的基本现象。</p>
+  <div class="demo" id="d-traj">
+    <div class="stack main"><canvas class="plain wide"></canvas></div>
+    <div class="ctl"></div>
+    <div class="readout"></div>
+  </div>
+
+  <h2 id="cloud">3 · 根云：几十万个多项式的根</h2>
+  <p>系数只能取 +1 或 −1 的多项式（Littlewood 多项式）。每个 GPU 线程随机抽一组系数，用 Aberth 迭代一次求出全部根，再把根落进格子计数。几秒钟就能叠出上亿个根：单位圆附近密，中间有精细的洞和分形一样的边。</p>
+  <div class="demo" id="d-cloud">
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+
+  <h2 id="domain">4 · 给复平面上色，以及“绕几圈”</h2>
+  <p>对平面上每个像素 z，算出 p(z) 的角度（辐角），按色轮上色；亮度条纹表示 |p(z)| 的大小。p(z) = (z − r₁)(z − r₂)…，乘法是角度相加，所以每个零点周围颜色正好绕色轮一圈。拖动白点移动零点；拖动虚线圆的圆心、用滑块调半径：沿着圆走一圈，p(z) 绕原点的圈数，恰好等于圆里零点的个数（辐角原理）。</p>
+  <div class="demo" id="d-domain">
+    <div class="stack main"><canvas class="gl wide"></canvas><canvas class="ov"></canvas></div>
+    <div class="ctl"></div>
+    <div class="readout"></div>
+  </div>
+
+  <h2 id="eig">5 · 特征值：2×2 矩阵</h2>
+  <p>矩阵 [[a, b], [c, d]] 的特征值是方程 λ² − (a+d)λ + (ad − bc) = 0 的两个根。判别式 (a−d)² + 4bc 小于零时，两个特征值是一对共轭复数。拖动滑块看它们在复平面上怎么走；勾选“对称（b = c）”时判别式不会小于零，特征值永远是实数，而且会互相“排斥”，不会撞在一起。</p>
+  <div class="demo" id="d-eig">
+    <div class="stack main"><canvas class="plain short"></canvas></div>
+    <div class="ctl"></div>
+    <div class="readout"></div>
+  </div>
+
+  <h2 id="boh">6 · 波希米亚矩阵：所有小整数矩阵的特征值</h2>
+  <p>随机生成 n×n 矩阵，元素只取 {−1, 0, 1}（或 {0, 1}、{−1, 1}），在 GPU 上用 Faddeev–LeVerrier 算出特征多项式，再求根。把几千万个矩阵的特征值叠在一起，就是一幅有层层自相似结构的图。n 越大，细节越多。</p>
+  <div class="demo" id="d-boh">
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+</main>
+<script type="module" src="/src/roots.js"></script>
+</body>
+</html>

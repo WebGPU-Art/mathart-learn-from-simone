@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>数学图案 · 跟 Simone 学</title>
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<main>
+  <h1>数学图案是怎么画出来的</h1>
+  <p class="sub">三集视频（上集《方程的根会跳舞》、下集《一个规则反复套用》、番外《对称吸引子的变奏》）里用到的所有技巧，在这里都能用 WebGPU 实时玩。灵感来自 Simone Conradi（X：@S_Conradi）公开发布的数学可视化作品；所有画面都是本项目按同样的数学重新计算、重新渲染的。</p>
+  <div class="demo" id="hero">
+    <div class="stack main"><canvas class="gl wide"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <p class="hint">对称吸引子 C2（参数来自 Conradi）+ 本项目加的旋转项 ω，随时间缓慢变化。拖动平移、滚轮缩放。</p>
+  </div>
+
+  <div class="cards">
+    <a href="./roots.html"><b>① 方程的根会跳舞</b><span>复数乘法、根的轨迹、Littlewood 根云、复平面着色与辐角原理、2×2 特征值、波希米亚矩阵</span></a>
+    <a href="./iterate.html"><b>② 一个规则反复套用</b><span>蛛网图与分岔、点密度的四步渲染、Clifford 吸引子与参数地图、对称从哪里来、洛伦兹、混沌游戏、IFS 分形</span></a>
+    <a href="./variations.html"><b>③ 番外：对称吸引子的变奏</b><span>Conradi 公式里的花边项与 a5/z̄、悬崖边的参数、ω 打破镜像、三到十二重、方向上色/浮雕/饰带、sin·cos(z²) 参数地图、环面根云、两个复数映射</span></a>
+    <a href="./play.html"><b>全屏实验室</b><span>所有系统、所有参数和上色方式放在一个全屏画布里，自由组合，导出 PNG</span></a>
+  </div>
+
+  <h2>来源角标</h2>
+  <div class="legend"><span class="badge c">Conradi 参数</span>参数读自 Simone Conradi 公开图片上的标注 <span class="badge f">公式来自 Conradi</span>公式来自他的作品，参数本项目自己找 <span class="badge n">本项目探索</span>他的帖子里没有的图案或表现手法 <span class="badge k">经典</span>文献中的常见例子</div>
+
+  <h2>技术说明</h2>
+  <ul>
+    <li><b>点密度渲染</b>：几万条轨道在 compute shader 里并行迭代，每一步把点所在像素的计数原子加一（<code>atomicAdd</code>），同时累加跳跃方向的 cos/sin；片元着色器读取计数，取对数、截断、伽马，再映射到 8 段颜色带。浮雕、辉光、极坐标展开都在这一步完成。</li>
+    <li><b>根云</b>：每个线程随机生成一个多项式（或一个小整数矩阵，用 Faddeev–LeVerrier 求特征多项式），在着色器里用 Aberth 法同时求出全部根，一次产出十几个点。</li>
+    <li><b>参数地图</b>：片元着色器里每个像素代表一组参数，两条相距 10⁻⁴ 的轨道一起迭代、不断拉回，平均每步放大倍数的对数就是李雅普诺夫指数。</li>
+    <li>源码：<a href="https://github.com/WebGPU-Art/mathart-learn-from-simon" target="_blank" rel="noopener">GitHub</a>。需要支持 WebGPU 的浏览器（新版 Chrome / Edge / Safari）。</li>
+  </ul>
+</main>
+<script type="module" src="/src/index.js"></script>
+</body>
+</html>

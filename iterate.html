@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>② 一个规则，反复套用</title>
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<main>
+  <h1>② 一个规则，反复套用</h1>
+  <p class="sub">对应视频下集：迭代、蛛网图、点的密度、Clifford 吸引子与参数搜索、对称吸引子、洛伦兹、迭代函数系统（分形）。</p>
+  <ol class="toc">
+    <li><a href="#cobweb">迭代与蛛网图</a></li>
+    <li><a href="#density">点的密度：四步渲染</a></li>
+    <li><a href="#clifford">Clifford 吸引子与参数地图</a></li>
+    <li><a href="#sym">对称从哪里来</a></li>
+    <li><a href="#lorenz">洛伦兹：三维的连续版本</a></li>
+    <li><a href="#game">混沌游戏：一个点一个点地画</a></li>
+    <li><a href="#ifs">迭代函数系统：缩小再复制</a></li>
+  </ol>
+
+  <h2 id="cobweb">1 · 迭代与蛛网图</h2>
+  <p>逻辑斯蒂映射 x′ = r·x·(1 − x)。左边是蛛网图：从 x₀ 出发，竖直走到抛物线，再水平走到对角线，就得到下一个 x。右边是分岔图：横轴是 r，每一列画出迭代几百次以后 x 会停在哪里。r 小的时候收敛到一个点，然后一分为二、二分为四……最后变成混沌。在右图上点击可以选 r。</p>
+  <div class="demo" id="d-cobweb">
+    <div class="pair">
+      <div><canvas class="plain sq cw"></canvas></div>
+      <div><canvas class="plain sq bf"></canvas></div>
+    </div>
+    <div class="ctl"></div>
+    <div class="readout"></div>
+  </div>
+
+  <h2 id="density">2 · 点的密度：四步渲染</h2>
+  <p>二维的规则迭代几千万次，单个点没有意义，有意义的是点的<b>疏密</b>。渲染分四步：① 把平面分成格子（这里每个像素一个格子），每落进一个点就 +1；② 计数相差几万倍，直接按比例显示几乎全黑；③ 取对数，把亮的压一压、暗的提一提；④ 把 0~1 的数映射到一条颜色带。用下面的按钮逐步看。</p>
+  <div class="demo" id="d-density">
+    <p class="st-nav"><button data-k="1">① 只看少量的点</button> <button data-k="2">② 计数，按比例显示</button> <button data-k="3">③ 取对数</button> <button data-k="4">④ 上色 + 辉光</button></p>
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+
+  <h2 id="clifford">3 · Clifford 吸引子与参数地图</h2>
+  <p>x′ = sin(a·y) + c·cos(a·x)，y′ = sin(b·x) + d·cos(b·y)。四个参数里随手取一组，大多数只画出几个点。左边固定 c、d，把 (a, b) 平面画成李雅普诺夫地图：橙红是混沌（会画出图案），蓝色是规则（只有几个点）。点击地图选参数。</p>
+  <div class="demo" id="d-clifford">
+    <div class="presets"></div>
+    <div class="pair">
+      <div><div class="stack"><canvas class="map"></canvas><canvas class="mapov"></canvas></div><p class="hint">左键点 / 拖 = 选 (a, b)；Shift + 拖 = 平移；滚轮 = 缩放</p></div>
+      <div><div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div><div class="readout"></div></div>
+    </div>
+    <div class="ctl"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+
+  <h2 id="sym">4 · 对称从哪里来</h2>
+  <p>用复数写规则 f(z)。如果“先转 360°/n 再算 f”等于“先算 f 再转同样的角度”，那么一条轨道转一下还是一条轨道，整幅图就有 n 重对称。经典的 Field–Golubitsky 公式 f(z) = (λ + α|z|² + β·Re(zⁿ) + iω)·z + γ·z̄ⁿ⁻¹ 满足这个条件。拖动画面上的白点 z（平移请按住 Shift）：白色是 z 和转过的 Rz；橙色是 f(Rz)；青色圆圈是 R·f(z)——两者永远重合。</p>
+  <div class="demo" id="d-sym">
+    <div class="presets"></div>
+    <div class="stack main"><canvas class="gl sq"></canvas><canvas class="ov"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+  </div>
+
+  <h2 id="lorenz">5 · 洛伦兹：三维的连续版本</h2>
+  <p>dx/dt = σ(y − x)，dy/dt = x(ρ − z) − y，dz/dt = xy − βz。每一步用四阶龙格–库塔法前进一小步 dt；几万条轨道同时积分，把三维的点旋转、投影到屏幕上再计数。拖滑块转动视角，或者让它自动旋转。</p>
+  <div class="demo" id="d-lorenz">
+    <div class="stack main"><canvas class="gl wide"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+
+  <h2 id="game">6 · 混沌游戏：一个点一个点地画</h2>
+  <p>三角形三个顶点。每一步随机挑一个顶点，从当前点向它走一半的路，画一个点。开始几步看不出什么，几千步以后，谢尔宾斯基三角出现了。这等价于：三个“缩小一半”的映射，每一步随机用一个。</p>
+  <div class="demo" id="d-game">
+    <div class="stack main"><canvas class="plain short"></canvas></div>
+    <p class="st-nav"><button class="g1">走 1 步</button> <button class="g10">走 10 步</button> <button class="g1k">走 1000 步</button> <button class="g0">重来</button></p>
+    <div class="readout"></div>
+  </div>
+
+  <h2 id="ifs">7 · 迭代函数系统：缩小再复制</h2>
+  <p>同样的混沌游戏，用 GPU 一次跑几万个点。颜色按“最后一步用的是哪个映射”。双龙用的是复数映射 (z + d)/(i − 1)，d ∈ {0, 1}；“记忆规则”禁止连续两次用同一个映射，方毯里会出现被禁止的空洞。</p>
+  <div class="demo" id="d-ifs">
+    <div class="presets"></div>
+    <div class="stack main"><canvas class="gl sq"></canvas><div class="badges"></div></div>
+    <div class="readout"></div>
+    <div class="ctl"></div>
+    <div class="ctl ctl2"></div>
+  </div>
+</main>
+<script type="module" src="/src/iterate.js"></script>
+</body>
+</html>
