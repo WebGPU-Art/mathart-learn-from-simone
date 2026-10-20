@@ -111,6 +111,9 @@ export async function mountDensity(root, o) {
   function frame(now) {
     raf = 0
     if (!visible) return
+    try { frame0(now) } catch (e) { console.error('[frame]', e) }
+  }
+  function frame0(now) {
     let more = false
     if (playing && o.anim) {
       o.anim.fn((now - t0) / 1000, v.params, api)

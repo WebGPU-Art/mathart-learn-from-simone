@@ -7,12 +7,15 @@ export function getDevice() {
       const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' })
       if (!adapter) throw new Error('没有可用的 WebGPU 适配器')
       const lim = adapter.limits
-      return adapter.requestDevice({
+      const dev = await adapter.requestDevice({
         requiredLimits: {
           maxStorageBufferBindingSize: Math.min(lim.maxStorageBufferBindingSize, 256 * 1024 * 1024),
           maxBufferSize: Math.min(lim.maxBufferSize, 256 * 1024 * 1024),
         },
       })
+      dev.addEventListener('uncapturederror', (e) => console.error('[webgpu]', e.error.message))
+      dev.lost.then((i) => console.error('[webgpu] device lost', i.reason, i.message))
+      return dev
     })()
   }
   return devicePromise
